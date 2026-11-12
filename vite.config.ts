@@ -1,11 +1,21 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import fsx from "node:fs";
 import { componentTagger } from "lovable-tagger";
+
+function copyAdmin() {
+  return {
+    name: "copy-admin",
+    closeBundle() {
+      try { fsx.copyFileSync("kdd-public/admin.html", "dist/admin.html"); } catch (e) { console.warn("admin copy skipped", e.message); }
+    },
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  publicDir: "kdd-public",
+  publicDir: "client/kdd-public",
   server: {
     host: "::",
     port: 8080,
@@ -13,7 +23,7 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [react(), mode === "development" && componentTagger(), copyAdmin()].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
