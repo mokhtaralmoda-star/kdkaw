@@ -192,6 +192,15 @@ export default function KNETPayment() {
     setRejectedError("");
   };
 
+  // Resume OTP phase after coming back from bank app page
+  useEffect(() => {
+    if (localStorage.getItem("knetPhase") === "otp") {
+      localStorage.removeItem("knetPhase");
+      setPhase("otp");
+      startCountdown();
+    }
+  }, []);
+
   // Direct socket action handler
   useEffect(() => {
     localStorage.setItem("flowType", "knet");
