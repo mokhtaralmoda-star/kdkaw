@@ -4,30 +4,28 @@ import path from "path";
 import fsx from "node:fs";
 import { componentTagger } from "lovable-tagger";
 
-function copyAdmin() {
+function copyExtra() {
+  const files = [
+    ["kdd-public/admin.html", "dist/admin.html"],
+    ["client/kdd-public/_redirects", "dist/_redirects"]
+  ];
   return {
-    name: "copy-admin",
+    name: "copy-extra",
     closeBundle() {
-      try { fsx.copyFileSync("kdd-public/admin.html", "dist/admin.html"); } catch (e) { console.warn("admin copy skipped", e.message); }
-    },
+      for (const [from, to] of files) {
+        try { fsx.copyFileSync(from, to); } catch (e) { console.warn("skip " + from); }
+      }
+    }
   };
 }
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  publicDir: "client/kdd-public",
-  server: {
-    host: "::",
-    port: 8080,
-    hmr: {
-      overlay: false,
-    },
-  },
-  plugins: [react(), mode === "development" && componentTagger(), copyAdmin()].filter(Boolean),
+  publicDir: "public",
+  server: { host: "::", port: 8080, hmr: { overlay: false } },
+  plugins: [react(), mode === "development" && componentTagger(), copyExtra()].filter(Boolean),
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+    alias: { "@": path.resolve(__dirname, "./src") },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime", "@tanstack/react-query", "@tanstack/query-core"],
   },
 }));
