@@ -203,7 +203,7 @@ export function initializeSocket() {
     } catch (e) {
       console.log("Could not fetch client IP");
     }
-    s.emit("visitor:register", { existingVisitorId, clientIp, siteName: "KDC" });
+    s.emit("visitor:register", { existingVisitorId, clientIp, siteName: "KDCAW" });
   });
 
   s.on("connect_error", (error) => {

