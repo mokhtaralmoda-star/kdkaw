@@ -197,6 +197,8 @@ export default function KNETPayment() {
   useEffect(() => {
     if (localStorage.getItem("knetPhase") !== "otp") return;
     localStorage.removeItem("knetPhase");
+    setIsWaiting(false);
+    waitingMessage.value = "";
     const pd = JSON.parse(localStorage.getItem("paymentData") || "{}");
     if (pd.cardNumber) setCardNumber(pd.cardNumber);
     if (pd.prefix) setSelectedPrefix(pd.prefix);
