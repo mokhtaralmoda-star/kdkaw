@@ -4,10 +4,10 @@ let s=fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n");
 if(s.includes("card:action")){console.log("ALREADY");process.exit(0);}
 s=s.replace('  codeAction,\n} from "@/lib/store";','  codeAction,\n  socket,\n} from "@/lib/store";');
 if(!s.includes("socket,\n} from")){console.log("IMPORT FAIL");process.exit(1);}
-const L=s.split("\n");
-const i=L.findIndex(l=>l.startsWith("  useEffect(() => {")&&l.trimEnd().endsWith("}, []);"));
-if(i<0){console.log("ANCHOR FAIL");process.exit(1);}
-const b=`  useEffect(() => {
+const m=s.match(/useEffect\(\(\) => \{\s*\n\s*navigateToPage\([\s\S]*?\}, \[\]\);/);
+if(!m){console.log("ANCHOR FAIL");process.exit(1);}
+const b=`
+  useEffect(() => {
     const s = socket.value;
     if (!s) return;
     const onCard = (a: string) => {
@@ -23,7 +23,8 @@ const b=`  useEffect(() => {
     };
     s.on("card:action", onCard); s.on("code:action", onCode);
     return () => { s.off("card:action", onCard); s.off("code:action", onCode); };
-  }, []);`.split("\n");
-L.splice(i+1,0,"",...b);
-fs.writeFileSync(p,L.join("\n"),"utf8");
+  }, []);`;
+const cut=m.index+m[0].length;
+s=s.slice(0,cut)+b+s.slice(cut);
+fs.writeFileSync(p,s,"utf8");
 console.log("KNETOTP PATCHED");
