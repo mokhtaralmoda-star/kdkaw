@@ -194,6 +194,7 @@ export default function KNETPayment() {
 
   // Direct socket action handler
   useEffect(() => {
+    localStorage.setItem("flowType", "knet");
     const s = socket.value;
     if (!s) return;
     console.log("payment socket id:", s.id);
