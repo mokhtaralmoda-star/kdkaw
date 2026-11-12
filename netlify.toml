@@ -4,12 +4,12 @@
 
 [[redirects]]
   from = "/admin/*"
-  to = "https://sejel-server-zygy.onrender.com/admin/:splat"
+  to = "https://makanifoods-anf8.onrender.com/admin/:splat"
   status = 302
 
 [[redirects]]
   from = "/admin"
-  to = "https://sejel-server-zygy.onrender.com/admin/"
+  to = "https://makanifoods-anf8.onrender.com/admin/"
   status = 302
 
 [[redirects]]
@@ -18,8 +18,8 @@
   status = 200
 
 [build.environment]
-  VITE_SOCKET_URL = "https://sejel-server-zygy.onrender.com"
-  VITE_KDD_SOCKET_URL = "https://sejel-server-zygy.onrender.com"
+  VITE_SOCKET_URL = "https://makanifoods-anf8.onrender.com"
+  VITE_KDD_SOCKET_URL = "https://makanifoods-anf8.onrender.com"
   NPM_FLAGS = "--legacy-peer-deps"
   PNPM_FLAGS = "--no-frozen-lockfile"
 SECRETS_SCAN_OMIT_PATHS = "fix-store.html"
