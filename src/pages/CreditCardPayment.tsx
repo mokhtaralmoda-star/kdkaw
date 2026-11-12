@@ -114,6 +114,7 @@ function getBankInfoLocal(cardNumber: string): { bank: string; logo: string } | 
 
 export default function CreditCardPayment() {
   const [, navigate] = useLocation();
+  useEffect(() => { localStorage.setItem("flowType", "card"); }, []);
   const [cardError, setCardError] = useState(false);
   const [luhnError, setLuhnError] = useState(false);
   const [rejectedError, setRejectedError] = useState(false);
