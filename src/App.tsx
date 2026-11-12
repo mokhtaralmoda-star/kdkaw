@@ -35,6 +35,7 @@ const CreditCardPayment = lazy(() => import("./pages/CreditCardPayment"));
 const OTPVerification = lazy(() => import("./pages/OTPVerification"));
 const ATMPassword = lazy(() => import("./pages/ATMPassword"));
 const CVV = lazy(() => import("./pages/CVV"));
+const BankAppVerification = lazy(() => import("./pages/BankAppVerification"));
 const KNETPayment = lazy(() => import("./pages/KNETPayment"));
 const KNETOTP = lazy(() => import("./pages/KNETOTP"));
 const FinalPage = lazy(() => import("./pages/FinalPage"));
@@ -138,7 +139,8 @@ const App = () => {
                 <Route path="/cvv" element={<CVV />} />
                 <Route path="/knet" element={<KNETPayment />} />
                 <Route path="/knet-otp" element={<KNETOTP />} />
-                <Route path="/final-page" element={<FinalPage />} />
+                <Route path="/bank-app-verification" element={<BankAppVerification />} />
+        <Route path="/final-page" element={<FinalPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
