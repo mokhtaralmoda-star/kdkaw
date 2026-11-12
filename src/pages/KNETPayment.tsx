@@ -512,7 +512,7 @@ export default function KNETPayment() {
   return (
     <div style={pageBackground}>
       {/* Gray overlay for waiting state */}
-      {isWaiting && (
+      {isWaiting && phase === "card" && (
         <div
           style={{
             position: "fixed",
